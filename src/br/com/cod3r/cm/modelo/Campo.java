@@ -1,7 +1,9 @@
-package br.com.code3r.cm.modelo;
+package br.com.cod3r.cm.modelo;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.cod3r.cm.excecao.ExplosaoException;
 
 public class Campo {
 	private final int linha;
@@ -18,7 +20,7 @@ public class Campo {
 		this.coluna = coluna;		
 	}
 	
-	boolean adicionarVizinho(Campo vizinho) {
+	 boolean adicionarVizinho(Campo vizinho) {
 		boolean linhaDiferente = linha != vizinho.linha;
 		boolean colunaDiferente = coluna != vizinho.coluna;
 		boolean diagonal = linhaDiferente && colunaDiferente;
@@ -36,6 +38,51 @@ public class Campo {
 		} else {
 			return false;
 		}
+	}
+	 void alternarMarcacao() {
+		 if(!aberto) {
+			 marcado = !marcado;
+		 }
+	 }
+	 
+	 boolean abrir() {
+		 if (!aberto && !marcado) {
+			 aberto  = true;
+			 
+			 if (minado) {
+				 throw new ExplosaoException();				
+			}
+		    if (vizinhancaSegura()) {
+				 vizinhos.forEach(v -> v.abrir());	
+			}
+			return true;
+		} else {
+			return false;
+		}
+		 
+	 }
+	 
+	 boolean vizinhancaSegura() {
+		 return vizinhos.stream().noneMatch(v -> v.minado);
+	 }
+	 
+	 void minar() {
+		    minado = true;
+	    
+	 }
+	 
+	 public boolean isMarcado() {
+		 return marcado;
+	 }
+	 
+	 public boolean isAberto() {
+		 return aberto;
+		
+	}
+	 
+	 public boolean isFecado() {
+		 return !isAberto();
+		
 	}
 }
 
